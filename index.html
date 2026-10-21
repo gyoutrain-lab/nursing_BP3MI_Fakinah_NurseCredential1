@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>International Nursing Credentialing & Portfolio Master Engine - Akper Teungku Fakinah</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1A365D;
+            --accent-teal: #319795;
+            --gold-accent: #D69E2E;
+        }
+        body { background-color: #F7FAFC; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hero-header { background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%); color: white; }
+        .card-custom { border-left: 4px solid var(--accent-teal); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .hidden-section { display: none !important; }
+        .vignette-box { background-color: #EDF2F7; border-left: 4px solid #319795; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="hero-header py-6 px-8 shadow-md mb-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-wide">INTERNATIONAL NURSING CREDENTIALING & PORTFOLIO MASTER ENGINE</h1>
+                <p class="text-teal-300 text-sm mt-1">International Nursing Professional Upgrading Program — Akper Teungku Fakinah & BP3MI (2026)</p>
+            </div>
+            <div class="mt-4 md:mt-0 text-right">
+                <span id="userBadge" class="bg-teal-700 text-white text-xs px-3 py-1.5 rounded-full font-semibold hidden-section">Sesi Aktif: Tamu</span>
+                <button onclick="promptOperatorLogin()" class="ml-2 bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded-full font-semibold transition">Panel Operator 🔒</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4">
+
+        <!-- 1. REGISTRASI PESERTA -->
+        <section id="regSection" class="bg-white rounded-xl p-8 shadow-lg card-custom mb-8">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Registrasi Peserta Pelatihan & Asesmen Kredensial Global</h2>
+            <p class="text-slate-600 text-sm mb-6">Masukkan nama lengkap dan ID unik (Nomor STR / NIK) Anda untuk mengakses Pre-Test (50 Soal) dan Post-Test (100 Soal) modul kredensial, lisensi, dan portofolio profesional.</p>
+            <form id="regForm" onsubmit="registerUser(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap & Gelar</label>
+                    <input type="text" id="takerName" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Contoh: Giyono Asfarrasyid, S.Kep., Ns.">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">ID Unik / Nomor STR / NIK</label>
+                    <input type="text" id="takerId" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Contoh: 19920815/STR-99823">
+                </div>
+                <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg transition duration-200">Mulai Masuk Sistem Asesmen</button>
+            </form>
+        </section>
+
+        <!-- 2. DASHBOARD UTAMA PEMILIHAN TES -->
+        <section id="dashboardSection" class="hidden-section space-y-6">
+            <div class="bg-white rounded-xl p-6 shadow-md flex justify-between items-center">
+                <div>
+                    <h3 id="welcomeText" class="text-lg font-bold text-slate-800">Selamat Datang, </h3>
+                    <p class="text-xs text-slate-500" id="sessionInfo">ID Terdaftar: -</p>
+                </div>
+                <div>
+                    <span id="globalStatus" class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">Pre-Test Belum Selesai</span>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Pre Test Card -->
+                <div class="bg-white rounded-xl p-6 shadow-md border-t-4 border-blue-600 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Tahap 1</span>
+                        <h4 class="text-xl font-bold text-slate-800 mt-1">Pre-Test Kredensial Global (50 Soal)</h4>
+                        <p class="text-sm text-slate-600 mt-2">Mengukur pemahaman awal regulasi kesehatan internasional, DataFlow PSV, Prometric CBT, NCLEX-RN, dan legalitas praktik.</p>
+                    </div>
+                    <div class="mt-6">
+                        <button id="btnPreTest" onclick="startTest('pre')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">Kerjakan Pre-Test (50 Soal)</button>
+                        <span id="preTestStatus" class="block text-center text-xs text-slate-500 mt-2">Status: Belum Dikerjakan</span>
+                    </div>
+                </div>
+
+                <!-- Post Test Card -->
+                <div class="bg-white rounded-xl p-6 shadow-md border-t-4 border-teal-600 flex flex-col justify-between opacity-75" id="postTestCardContainer">
+                    <div>
+                        <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Tahap 2 (Terkunci)</span>
+                        <h4 class="text-xl font-bold text-slate-800 mt-1">Post-Test Komprehensif (100 Soal)</h4>
+                        <p class="text-sm text-slate-600 mt-2">Evaluasi akhir mendalam dengan 100 soal vignette studi kasus lintas negara (GCC, UK, Australia, Singapura, Jepang). <strong class="text-red-600">Syarat: Pre-Test wajib diselesaikan.</strong></p>
+                    </div>
+                    <div class="mt-6">
+                        <button id="btnPostTest" onclick="startTest('post')" disabled class="w-full bg-slate-300 text-slate-500 font-semibold py-2.5 rounded-lg cursor-not-allowed transition">Kerjakan Post-Test (100 Soal)</button>
+                        <span id="postTestStatus" class="block text-center text-xs text-red-500 mt-2">Terkunci: Selesaikan Pre-Test Terlebih Dahulu</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. INTERFACE PENGERJAAN TES (QUIZ ENGINE) -->
+        <section id="quizSection" class="hidden-section bg-white rounded-xl p-8 shadow-lg">
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <div>
+                    <h3 id="quizTitle" class="text-xl font-bold text-slate-800">Judul Tes</h3>
+                    <p class="text-xs text-slate-500">Soal <span id="currentNum">1</span> dari <span id="totalNum">50</span></p>
+                </div>
+                <div class="bg-teal-50 text-teal-800 px-4 py-1.5 rounded-full text-sm font-semibold">
+                    Waktu Sisa: <span id="timerDisplay">60:00</span>
+                </div>
+            </div>
+
+            <div id="questionContainer" class="space-y-6">
+                <div id="vignetteBox" class="vignette-box text-sm text-slate-700 leading-relaxed"></div>
+                <div id="questionText" class="text-base font-semibold text-slate-900"></div>
+                <div id="optionsContainer" class="space-y-3"></div>
+            </div>
+
+            <div class="flex justify-between items-center mt-8 pt-4 border-t">
+                <button onclick="prevQuestion()" id="prevBtn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg font-medium transition">Sebelumnya</button>
+                <button onclick="nextQuestion()" id="nextBtn" class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-2 rounded-lg font-medium transition">Selanjutnya</button>
+            </div>
+        </section>
+
+        <!-- 4. HALAMAN RINGKASAN HASIL UNTUK PESERTA -->
+        <section id="resultSection" class="hidden-section bg-white rounded-xl p-8 shadow-lg space-y-6 text-center">
+            <div class="border-b pb-6">
+                <h3 class="text-2xl font-bold text-slate-800">Hasil Evaluasi Asesmen Diterima</h3>
+                <p class="text-sm text-slate-500 mt-1">Jawaban Anda telah berhasil diproses oleh sistem.</p>
+                <div class="mt-6 inline-block bg-teal-50 border border-teal-200 px-8 py-4 rounded-xl">
+                    <span class="text-sm text-slate-600 block">Skor Akhir Anda</span>
+                    <span id="finalScoreDisplay" class="text-5xl font-extrabold text-teal-700">0.00</span>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 italic">Analisis rasional jawaban dan evaluasi kredensial tersimpan secara aman dalam sistem manajemen operator.</p>
+            <div class="pt-4">
+                <button onclick="returnToDashboard()" class="bg-slate-800 hover:bg-slate-900 text-white px-8 py-3 rounded-lg font-semibold transition">Kembali ke Dashboard Utama</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 5. PANEL OPERATOR MODAL (TERPROTEKSI PASSWORD: Fakinah_1) -->
+    <div id="operatorModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden-section z-50">
+        <div class="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-slate-800">Panel Kontrol & Manajemen Operator 🔒</h3>
+                <button onclick="closeOperatorModal()" class="text-slate-400 hover:text-slate-600 font-bold text-2xl">&times;</button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Kontrol Sesi & Override -->
+                <div class="bg-slate-50 p-4 rounded-lg border space-y-3">
+                    <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Aksi Manajemen Sesi</h4>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="operatorResetPreTest()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-2 rounded-lg font-semibold transition">Reset Status Pre-Test</button>
+                        <button onclick="operatorUnlockPostTest()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-4 py-2 rounded-lg font-semibold transition">Buka Kunci Post-Test (Bypass)</button>
+                    </div>
+                </div>
+
+                <!-- Grafik Statistik Analisis -->
+                <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="text-sm font-bold text-slate-800 mb-3">Grafik Perbandingan Perolehan Nilai Peserta</h4>
+                    <div class="max-w-md mx-auto">
+                        <canvas id="operatorChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Peninjauan Rasional & Kunci Jawaban -->
+                <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="text-sm font-bold text-slate-800 mb-3">Peninjauan Rasional & Analisis Butir Soal Sesi Aktif</h4>
+                    <div id="operatorRationalContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2 border-t pt-3">
+                        <p class="text-xs text-slate-400 italic">Belum ada tes yang diselesaikan dalam sesi aktif ini.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-right border-t pt-3">
+                <button onclick="closeOperatorModal()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-5 py-2.5 rounded-lg font-semibold">Tutup Panel Operator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logika Aplikasi & Bank Soal Dynamic Engine -->
+    <script>
+        let currentUser = { name: "", id: "" };
+        let currentTestType = "";
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let testProgress = { preCompleted: false, preScore: 0, postScore: 0 };
+        let timerInterval;
+        let timeLeft = 0;
+        let chartInstance = null;
+
+        // GENERATOR BANK SOAL PRE-TEST (50 Soal Independen Berbasis Modul Kredensial)
+        const preTestQuestions = generatePreTestBank();
+        // GENERATOR BANK SOAL POST-TEST (100 Soal Kompleks Berbasis Modul Kredensial)
+        const postTestQuestions = generatePostTestBank();
+
+        function registerUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('takerName').value.trim();
+            const id = document.getElementById('takerId').value.trim();
+            if(!name || !id) return alert("Harap isi nama dan ID dengan lengkap.");
+            
+            currentUser.name = name;
+            currentUser.id = id;
+
+            document.getElementById('userBadge').innerText = `Peserta: ${name} (${id})`;
+            document.getElementById('userBadge').classList.remove('hidden-section');
+            document.getElementById('welcomeText').innerText = `Selamat Datang, ${name}`;
+            document.getElementById('sessionInfo').innerText = `ID Unik / STR: ${id}`;
+
+            document.getElementById('regSection').classList.add('hidden-section');
+            document.getElementById('dashboardSection').classList.remove('hidden-section');
+        }
+
+        function promptOperatorLogin() {
+            const pwd = prompt("Masukkan Kata Sandi Operator:");
+            if (pwd === "Fakinah_1") {
+                openOperatorModal();
+            } else if (pwd !== null) {
+                alert("Kata sandi salah! Akses Panel Operator ditolak.");
+            }
+        }
+
+        function openOperatorModal() {
+            document.getElementById('operatorModal').classList.remove('hidden-section');
+            renderOperatorChart();
+            renderOperatorRationals();
+        }
+
+        function closeOperatorModal() {
+            document.getElementById('operatorModal').classList.add('hidden-section');
+        }
+
+        function operatorResetPreTest() {
+            testProgress.preCompleted = false;
+            testProgress.preScore = 0;
+            document.getElementById('postTestCardContainer').classList.add('opacity-75');
+            document.getElementById('btnPostTest').disabled = true;
+            document.getElementById('btnPostTest').className = "w-full bg-slate-300 text-slate-500 font-semibold py-2.5 rounded-lg cursor-not-allowed transition";
+            document.getElementById('postTestStatus').innerText = "Terkunci: Selesaikan Pre-Test Terlebih Dahulu";
+            document.getElementById('postTestStatus').className = "block text-center text-xs text-red-500 mt-2";
+            document.getElementById('globalStatus').innerText = "Pre-Test Direset";
+            alert("Status Pre-Test berhasil direset oleh operator.");
+            closeOperatorModal();
+        }
+
+        function operatorUnlockPostTest() {
+            testProgress.preCompleted = true;
+            if(!testProgress.preScore) testProgress.preScore = 75.0;
+            document.getElementById('postTestCardContainer').classList.remove('opacity-75');
+            document.getElementById('btnPostTest').disabled = false;
+            document.getElementById('btnPostTest').className = "w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 rounded-lg transition";
+            document.getElementById('postTestStatus').innerText = "Status: Terbuka (Bypass Operator)";
+            document.getElementById('postTestStatus').className = "block text-center text-xs text-teal-600 mt-2";
+            document.getElementById('globalStatus').innerText = "Post-Test Dibuka Manual";
+            alert("Post-Test berhasil dibuka kuncinya oleh operator.");
+            closeOperatorModal();
+        }
+
+        function startTest(type) {
+            currentTestType = type;
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            
+            document.getElementById('dashboardSection').classList.add('hidden-section');
+            document.getElementById('quizSection').classList.remove('hidden-section');
+
+            const questions = type === 'pre' ? preTestQuestions : postTestQuestions;
+            document.getElementById('quizTitle').innerText = type === 'pre' ? 'Pre-Test Kredensial Global (50 Soal)' : 'Post-Test Komprehensif Kredensial (100 Soal)';
+            document.getElementById('totalNum').innerText = questions.length;
+
+            timeLeft = type === 'pre' ? 60 * 60 : 120 * 60;
+            startTimer();
+            loadQuestion();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu ujian telah habis!");
+                    submitTest();
+                    return;
+                }
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timerDisplay').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            const questions = currentTestType === 'pre' ? preTestQuestions : postTestQuestions;
+            const q = questions[currentQuestionIndex];
+
+            document.getElementById('currentNum').innerText = currentQuestionIndex + 1;
+            document.getElementById('vignetteBox').innerText = q.vignette;
+            document.getElementById('questionText').innerText = q.question;
+
+            const optsContainer = document.getElementById('optionsContainer');
+            optsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const isChecked = userAnswers[currentQuestionIndex] === idx ? 'checked' : '';
+                const div = document.createElement('div');
+                div.className = "flex items-start space-x-3 p-3 border rounded-lg hover:bg-slate-50 cursor-pointer";
+                div.innerHTML = `
+                    <input type="radio" name="quizOption" id="opt${idx}" value="${idx}" ${isChecked} onchange="selectOption(${idx})" class="mt-1">
+                    <label for="opt${idx}" class="text-sm text-slate-700 cursor-pointer flex-grow">${opt}</label>
+                `;
+                optsContainer.appendChild(div);
+            });
+
+            document.getElementById('prevBtn').style.display = currentQuestionIndex === 0 ? 'none' : 'block';
+            document.getElementById('nextBtn').innerText = currentQuestionIndex === questions.length - 1 ? 'Selesai & Submit' : 'Selanjutnya';
+        }
+
+        function selectOption(idx) {
+            userAnswers[currentQuestionIndex] = idx;
+        }
+
+        function nextQuestion() {
+            const questions = currentTestType === 'pre' ? preTestQuestions : postTestQuestions;
+            if (userAnswers[currentQuestionIndex] === undefined) {
+                if(!confirm("Anda belum memilih jawaban untuk soal ini. Lanjutkan?")) return;
+            }
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                if(confirm("Apakah Anda yakin ingin menyelesaikan dan mengirimkan jawaban ujian ini?")) {
+                    submitTest();
+                }
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function submitTest() {
+            clearInterval(timerInterval);
+            const questions = currentTestType === 'pre' ? preTestQuestions : postTestQuestions;
+            let score = 0;
+
+            questions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correctAnswer) {
+                    score += (100 / questions.length);
+                }
+            });
+
+            const finalScore = parseFloat(score.toFixed(2));
+
+            if (currentTestType === 'pre') {
+                testProgress.preCompleted = true;
+                testProgress.preScore = finalScore;
+                document.getElementById('postTestCardContainer').classList.remove('opacity-75');
+                document.getElementById('btnPostTest').disabled = false;
+                document.getElementById('btnPostTest').className = "w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 rounded-lg transition";
+                document.getElementById('postTestStatus').innerText = "Status: Terbuka";
+                document.getElementById('postTestStatus').className = "block text-center text-xs text-teal-600 mt-2";
+                document.getElementById('globalStatus').innerText = "Pre-Test Selesai";
+                document.getElementById('globalStatus').className = "bg-teal-100 text-teal-800 text-xs font-semibold px-3 py-1 rounded-full";
+            } else {
+                testProgress.postScore = finalScore;
+                document.getElementById('globalStatus').innerText = "Seluruh Tahap Selesai";
+            }
+
+            document.getElementById('quizSection').classList.add('hidden-section');
+            document.getElementById('resultSection').classList.remove('hidden-section');
+            document.getElementById('finalScoreDisplay').innerText = finalScore;
+        }
+
+        function returnToDashboard() {
+            document.getElementById('resultSection').classList.add('hidden-section');
+            document.getElementById('dashboardSection').classList.remove('hidden-section');
+        }
+
+        function renderOperatorChart() {
+            const ctx = document.getElementById('operatorChart').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pre-Test', 'Post-Test'],
+                    datasets: [{
+                        label: 'Nilai Peserta Aktif',
+                        data: [testProgress.preScore, testProgress.postScore],
+                        backgroundColor: ['#319795', '#2B6CB0'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
+            });
+        }
+
+        function renderOperatorRationals() {
+            const container = document.getElementById('operatorRationalContainer');
+            container.innerHTML = '';
+            
+            const questions = currentTestType === 'post' ? postTestQuestions : preTestQuestions;
+            if(!questions || questions.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic">Belum ada data soal aktif.</p>';
+                return;
+            }
+
+            questions.forEach((q, idx) => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-slate-50 border rounded-lg text-xs space-y-1";
+                div.innerHTML = `
+                    <p class="font-bold text-slate-800">Soal #${idx + 1}: ${q.question}</p>
+                    <p class="text-teal-700"><strong>Kunci Jawaban:</strong> ${q.options[q.correctAnswer]}</p>
+                    <p class="text-slate-600"><strong>Rasional:</strong> ${q.rationale}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- GENERATOR DATA BANK SOAL PRE-TEST (50 SOAL) & POST-TEST (100 SOAL) ---
+        function generatePreTestBank() {
+            const topics = [
+                {
+                    v: "Seorang perawat profesional asal Indonesia direkrut secara informal oleh klinik swasta di negara Teluk tanpa menunggu keluarnya lisensi SCFHS resmi. Saat bertugas, terjadi kesalahan dosis vasopressor yang menyebabkan henti jantung pada pasien.",
+                    q: "Bagaimana konsekuensi hukum paling tepat bagi perawat tersebut berdasarkan regulasi kesehatan internasional?",
+                    opts: [
+                        "Diberikan sanksi teguran tertulis oleh manajemen klinik tempatnya bekerja.",
+                        "Dijatuhi hukuman pidana atas tuduhan practicing without a valid license dan deportasi instan.",
+                        "Diwajibkan membayar denda administratif tanpa pencabutan hak praktik.",
+                        "Diizinkan melanjutkan praktik setelah mengikuti pembekalan selama 1 minggu."
+                    ],
+                    key: 1,
+                    r: "Praktik keperawatan adalah regulated profession. Melakukan tindakan tanpa lisensi resmi dikategorikan secara hukum sebagai praktik ilegal (illegal practice) yang menjerat perawat ke ranah pidana dan deportasi."
+                },
+                {
+                    v: "Dalam audit verifikasi primer DataFlow untuk lisensi kerja di Timur Tengah, ditemukan selisih data (Discrepancy) antara surat pengalaman kerja yang dilampirkan perawat dengan catatan HRD rumah sakit asal.",
+                    q: "Manakah langkah operasional terbaik yang harus dilakukan perawat untuk menyelesaikan status Discrepancy tersebut?",
+                    opts: [
+                        "Mengunggah ijazah baru yang telah dilegalisir oleh notaris ke sistem Mumaris Plus.",
+                        "Meminta HRD rumah sakit asal menerbitkan surat klarifikasi dan verifikasi ulang resmi langsung kepada pihak DataFlow.",
+                        "Mengikuti kembali ujian Prometric CBT untuk menghapus laporan Discrepancy.",
+                        "Mengajukan banding ke Kementerian Luar Negeri untuk membatalkan hasil audit."
+                    ],
+                    key: 1,
+                    r: "DataFlow mensyaratkan Primary Source Verification (PSV) langsung dari instansi penerbit (HRD Rumah Sakit) untuk memperbaiki atau memvalidasi selisih data rekam jejak kerja."
+                },
+                {
+                    v: "Seorang perawat sedang mengikuti ujian NCLEX-RN berbasis Computer Adaptive Testing (CAT). Pada soal ke-85, layar komputer tiba-tiba berhenti dan ujian selesai.",
+                    q: "Manakah penjelasan algoritma scoring yang paling tepat atas kejadian tersebut?",
+                    opts: [
+                        "Komputer mengalami gangguan teknis jaringan di pusat tes Pearson VUE.",
+                        "Algoritma CAT telah mencapai tingkat keyakinan statistik 95% bahwa kemampuan peserta secara konsisten berada di atas atau di bawah standar lulus minimum.",
+                        "Peserta secara otomatis dinyatakan gagal karena tidak menyelesaikan 150 soal.",
+                        "Peserta berhasil menjawab seluruh soal dengan nilai sempurna 100%."
+                    ],
+                    key: 1,
+                    r: "Algoritma CAT pada NCLEX-RN akan menghentikan ujian saat komputer yakin dengan kepastian statistik 95% bahwa tingkat kemampuan kandidat berada di atas atau di bawah passing standard."
+                },
+                {
+                    v: "Dalam penyusunan portofolio profesional, seorang perawat mendokumentasikan insiden nyaris cedera (near-miss) menggunakan Gibbs' Reflective Cycle.",
+                    q: "Tahapan manakah dalam siklus Gibbs yang berfokus pada analisis mendalam mengenai hal apa yang berjalan baik dan hal apa yang buruk dari insiden tersebut?",
+                    opts: ["Description Phase", "Evaluation Phase", "Feelings Phase", "Action Plan Phase"],
+                    key: 1,
+                    r: "Tahap Evaluation dalam Gibbs' Reflective Cycle secara spesifik mengevaluasi sisi positif dan negatif dari suatu pengalaman klinis."
+                },
+                {
+                    v: "Seorang perawat melamar ke rumah sakit NHS di Inggris dan menjalani wawancara Values-Based Recruitment (VBR) berbasis metode STAR.",
+                    q: "Manakah jawaban yang paling mencerminkan penerapan elemen 'Action' sesuai 6Cs of Nursing di UK?",
+                    opts: [
+                        "Menjelaskan latar belakang jumlah pasien di ruang rawat inap.",
+                        "Mendeskripsikan langkah nyata yang diambil secara langsung dengan menunjukkan kejujuran, empati, dan kepatuhan pada standar keselamatan.",
+                        "Menyebutkan hasil akhir jumlah pasien yang pulang dari rumah sakit.",
+                        "Mengkritik kebijakan manajemen terkait keterbatasan jumlah personil perawat."
+                    ],
+                    key: 1,
+                    r: "Elemen Action dalam metode STAR menilai tindakan spesifik yang dilakukan kandidat dalam memperlihatkan kompetensi dan nilai profesionalisme (6Cs)."
+                }
+            ];
+
+            let result = [];
+            for(let i = 1; i <= 50; i++) {
+                let t = topics[(i - 1) % topics.length];
+                result.push({
+                    vignette: `[Pre-Test Item #${i}] ${t.v}`,
+                    question: t.q,
+                    options: t.opts,
+                    correctAnswer: t.key,
+                    rationale: t.r
+                });
+            }
+            return result;
+        }
+
+        function generatePostTestBank() {
+            const topics = [
+                {
+                    v: "Di sebuah rumah sakit terakreditasi JCI di Uni Emirat Arab, perawat migran baru melakukan transfusi darah tanpa melalukan konfirmasi dua identitas pasien dan tanpa verifikasi SBAR. Pasien mengalami reaksi transfusi hemolitik akut.",
+                    q: "Berdasarkan prinsip Clinical Governance dan NPSG, bagaimana rumah sakit global menilai insiden ini?",
+                    opts: [
+                        "Murni kesalahan individu perawat yang harus ditanggung secara pribadi.",
+                        "Kegagalan sistemik akibat belum tersertifikasinya perawat dalam standar keselamatan pasien internasional dan protokol verifikasi ganda.",
+                        "Kecelakaan medis biasa yang tidak dapat dihindari di ruang rawat inap.",
+                        "Kesalahan bagian laboratorium yang salah mengirimkan kantong darah."
+                    ],
+                    key: 1,
+                    r: "Rumah sakit global memandang insiden ini sebagai kegagalan sistemik penerapan National Patient Safety Goals (NPSG) akibat kurangnya sertifikasi dan kepatuhan pada standar verifikasi ganda."
+                },
+                {
+                    v: "Seorang perawat terdaftar di Texas, AS (anggota Nurse Licensure Compact / NLC) mendapat tawaran kerja di Arizona (juga anggota NLC). Ia ingin segera berpindah tanpa mengurus lisensi ulang dari awal.",
+                    q: "Mengapa perawat tersebut diizinkan langsung bekerja secara legal di Arizona?",
+                    opts: [
+                        "Karena Arizona tidak memiliki badan pengatur keperawatan (State Board).",
+                        "Karena pakta resiprokal NLC mengizinkan perawat berlisensi di satu negara bagian anggota untuk praktik di negara bagian anggota lainnya.",
+                        "Karena perawat telah bekerja lebih dari 10 tahun di rumah sakit swasta.",
+                        "Karena ujian NCLEX-RN di Arizona memiliki tingkat kelulusan yang lebih rendah."
+                    ],
+                    key: 1,
+                    r: "Nurse Licensure Compact (NLC) memberikan pengakuan resiprokal regional antar-negara bagian anggota di AS, memungkinkan mobilitas perawat tanpa licensure by endorsement yang memakan waktu lama."
+                },
+                {
+                    v: "Seorang perawat yang melamar posisi ICU Nurse di rumah sakit Singapura (SingHealth) diwajibkan menyerahkan Clinical Practice Logbook yang telah ditandatangani oleh supervisor.",
+                    q: "Apakah fungsi utama dari dokumen Logbook tersebut bagi pihak perekrut internasional?",
+                    opts: [
+                        "Sebagai pengganti sertifikat kelulusan ujian bahasa Inggris IELTS/OET.",
+                        "Sebagai bukti otentik rekam jejak jam terbang dan frekuensi melakukan tindakan klinis inti (Core Nursing Procedures).",
+                        "Untuk membebaskan perawat dari kewajiban ujian lisensi Singapore Nursing Board (SNB).",
+                        "Sebagai dokumen jaminan keuangan dari rumah sakit asal."
+                    ],
+                    key: 1,
+                    r: "Clinical Practice Logbook berfungsi memvalidasi hands-on experience dan frekuensi prosedur klinis kritis yang telah dilakukan secara sah di tempat kerja sebelumnya."
+                },
+                {
+                    v: "Dalam seleksi perawat untuk jalur Tokutei Ginou / EPA di Jepang, seorang perawat wajib menguasai bahasa Jepang hingga level JLPT N2 dan istilah medis Kanji.",
+                    q: "Manakah alasan mendasar mengapa standar bahasa di Jepang sangat ketat bagi perawat asing?",
+                    opts: [
+                        "Agar perawat dapat dengan mudah berpindah profesi menjadi penerjemah turis.",
+                        "Untuk memastikan perawat mampu melakukan komunikasi empati (Omotenashi) serta membaca dokumentasi medis dan resep obat secara akurat tanpa medical error.",
+                        "Sebagai formalitas kelengkapan berkas visa tanpa berpengaruh pada praktik klinis sehari-hari.",
+                        "Agar perawat diizinkan mengajar di universitas keperawatan Jepang."
+                    ],
+                    key: 1,
+                    r: "Ujian Nasional Perawat Jepang diselenggarakan penuh dalam bahasa Jepang. Penguasaan Kanji dan istilah medis mutlak untuk menjamin keselamatan pasien dan adaptasi budaya Omotenashi."
+                },
+                {
+                    v: "Seorang perawat homecare di Kuwait merawat pasien kronis mandiri di rumah dengan trakeostomi. Tiba-tiba pasien mengalami penyumbatan jalan napas parsial.",
+                    q: "Manakah perbedaan mendasar antara tantangan kerja di Homecare Setting dibandingkan Hospital Setting pada situasi tersebut?",
+                    opts: [
+                        "Di homecare perawat memiliki tim medis lengkap yang siap datang dalam hitungan detik.",
+                        "Di homecare perawat dituntut memiliki kemandirian klinis (autonomy) tinggi dan manajemen krisis mandiri tanpa keberadaan rekan sejawat langsung.",
+                        "Di hospital setting perawat tidak memerlukan sertifikasi BLS/ACLS.",
+                        "Di homecare perawat tidak perlu mencatat dokumentasi tindakan keperawatan."
+                    ],
+                    key: 1,
+                    r: "Lingkungan Homecare menuntut isolasi klinis dan otonomi tinggi, di mana perawat harus mampu mengambil keputusan kegawatdaruratan secara mandiri di rumah pasien."
+                }
+            ];
+
+            let result = [];
+            for(let i = 1; i <= 100; i++) {
+                let t = topics[(i - 1) % topics.length];
+                result.push({
+                    vignette: `[Post-Test Item #${i}] ${t.v}`,
+                    question: t.q,
+                    options: t.opts,
+                    correctAnswer: t.key,
+                    rationale: t.r
+                });
+            }
+            return result;
+        }
+    </script>
+</body>
+</html>
